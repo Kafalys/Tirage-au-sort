@@ -25,7 +25,6 @@
     position: absolute;
     bottom: 30%;
     left: 40%;
-    transform: translateX(-12%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -86,12 +85,34 @@
     user-select: none;
   }
 
-  .num-container.rolling img {
-    animation: roll 0.07s steps(1) infinite;
+  .num-container.final {
+    position: relative;
+    z-index: 1000;
+    animation: containerMove 0.8s ease-out forwards;
   }
 
-  @keyframes roll {
-    50% { transform: scale(0.9) translateY(-5px); opacity: 0.7; }
+  .num-container.final img {
+    animation: zoomIn 0.8s ease-out forwards;
+  }
+
+  @keyframes containerMove {
+    from { 
+      transform: translateY(0);
+      gap: 10px;  /* 👈 Espacement initial (petit) */
+    }
+    to { 
+      transform: translateY(-200px);
+      gap: 300px;  /* 👈 Espacement final (grand) */
+    }
+  }
+
+  @keyframes zoomIn {
+    from { 
+      transform: scale(1);
+    }
+    to { 
+      transform: scale(4);
+    }
   }
 
   .btn {
@@ -127,7 +148,7 @@
     <div class="ca ca-bl"></div>
     <div class="ca ca-br"></div>
     <div class="num-container" id="numContainer">
-      <img src="./Chiffres/Inter.png" alt="?" id="numDisplay">
+      <img src="/chiffres/Inter.png" alt="?" id="numDisplay">
     </div>
   </div>
 
@@ -151,7 +172,7 @@
     
     if (num === '?') {
       const img = document.createElement('img');
-      img.src = './Chiffres/Inter.png';
+      img.src = './chiffres/Inter.png';
       img.alt = '?';
       container.appendChild(img);
     } else {
@@ -159,7 +180,7 @@
       for (let i = 0; i < numStr.length; i++) {
         const digit = numStr[i];
         const img = document.createElement('img');
-        img.src = `./Chiffres/${digit}.png`;
+        img.src = `./chiffres/${digit}.png`;
         img.alt = digit;
         container.appendChild(img);
       }
@@ -167,6 +188,13 @@
   }
 
   let running = false;
+  
+  // 🎯 VARIABLE À MODIFIER : Nombre d'itérations du tirage (plus grand = plus long)
+  const ROLL_ITERATIONS = 28;  // Changez cette valeur pour augmenter/diminuer le temps
+  
+  // 🎯 VARIABLE À MODIFIER : Temps entre chaque changement en millisecondes
+  const ROLL_SPEED = 55;  // Changez cette valeur pour accélérer/ralentir les chiffres
+  
   function roll() {
     if (running) return;
     running = true;
@@ -177,14 +205,21 @@
     let n = 0;
     const iv = setInterval(() => {
       displayNumber(Math.floor(Math.random() * 100) + 1);
-      if (++n >= 28) {
+      if (++n >= ROLL_ITERATIONS) {
         clearInterval(iv);
         displayNumber(final);
         container.classList.remove('rolling');
+        
+        // Appliquer l'effet d'agrandissement au centre
+        setTimeout(() => {
+          container.classList.add('final');
+          box.style.pointerEvents = 'none';
+        }, 50);
+        
         sparks(box);
         running = false;
       }
-    }, 55);
+    }, ROLL_SPEED);
   }
 
   window.addEventListener('load', () => {
