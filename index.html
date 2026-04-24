@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAININGA TONE</title>
+<link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@900&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #000;
+  }
+
+  .bg {
+    position: absolute;
+    inset: 0;
+    background: url('Background.png') center center / cover no-repeat;
+  }
+
+  .number-wrap {
+    position: absolute;
+    bottom: 30%;
+    left: 40%;
+    transform: translateX(-12%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .num-box {
+    position: relative;
+    width: 180px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .num-border {
+    display: none;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 20px rgba(0,255,68,1), inset 0 0 25px rgba(0,255,68,0.3), 0 0 70px rgba(0,255,68,0.6); }
+    50%      { box-shadow: 0 0 40px rgba(0,255,68,1), inset 0 0 40px rgba(0,255,68,0.5), 0 0 120px rgba(0,255,68,0.9); }
+  }
+
+  .ca { display: none; }
+  .ca-tl { display: none; }
+  .ca-tr { display: none; }
+  .ca-bl { display: none; }
+  .ca-br { display: none; }
+
+  .num-text {
+    font-family: 'Exo 2', sans-serif;
+    font-size: 72px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow:
+      0 0 10px rgba(0,255,68,1),
+      0 0 30px rgba(0,255,68,0.9),
+      0 0 70px rgba(0,255,68,0.7);
+    letter-spacing: 4px;
+    user-select: none;
+    position: relative;
+    z-index: 2;
+    cursor: pointer;
+  }
+
+  .num-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+  }
+
+  .num-container img {
+    max-height: 150px;
+    width: auto;
+    user-select: none;
+  }
+
+  .num-container.rolling img {
+    animation: roll 0.07s steps(1) infinite;
+  }
+
+  @keyframes roll {
+    50% { transform: scale(0.9) translateY(-5px); opacity: 0.7; }
+  }
+
+  .btn {
+    display: none;
+  }
+  .btn:hover { background: #39ff14; box-shadow: 0 0 60px rgba(0,255,68,1), 0 0 120px rgba(0,255,68,0.6); transform: scale(1.05); }
+  .btn:active { transform: scale(0.96); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .spark {
+    position: fixed;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 999;
+    animation: sparkFly 0.7s ease-out forwards;
+  }
+  @keyframes sparkFly {
+    0%   { opacity: 1; transform: translate(0,0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+
+<div class="number-wrap">
+  <div class="num-box" id="numBox" onclick="roll()">
+    <div class="num-border"></div>
+    <div class="ca ca-tl"></div>
+    <div class="ca ca-tr"></div>
+    <div class="ca ca-bl"></div>
+    <div class="ca ca-br"></div>
+    <div class="num-container" id="numContainer">
+      <img src="./chiffres/Inter.png" alt="?" id="numDisplay">
+    </div>
+  </div>
+
+<script>
+  function sparks(el) {
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+    for (let i = 0; i < 16; i++) {
+      const s = document.createElement('div');
+      s.className = 'spark';
+      const a = (i / 16) * Math.PI * 2, d = 50 + Math.random() * 60;
+      s.style.cssText = `left:${cx}px;top:${cy}px;--tx:${Math.cos(a)*d}px;--ty:${Math.sin(a)*d}px;background:${i%2?'#00ff44':'#fff'};`;
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), 800);
+    }
+  }
+
+  function displayNumber(num) {
+    const container = document.getElementById('numContainer');
+    container.innerHTML = '';
+    
+    if (num === '?') {
+      const img = document.createElement('img');
+      img.src = './chiffres/Inter.png';
+      img.alt = '?';
+      container.appendChild(img);
+    } else {
+      const numStr = String(num).padStart(2, '0');
+      for (let i = 0; i < numStr.length; i++) {
+        const digit = numStr[i];
+        const img = document.createElement('img');
+        img.src = `./chiffres/${digit}.png`;
+        img.alt = digit;
+        container.appendChild(img);
+      }
+    }
+  }
+
+  let running = false;
+  function roll() {
+    if (running) return;
+    running = true;
+    const container = document.getElementById('numContainer');
+    const box = document.getElementById('numBox');
+    container.classList.add('rolling');
+    const final = Math.floor(Math.random() * 100) + 1;
+    let n = 0;
+    const iv = setInterval(() => {
+      displayNumber(Math.floor(Math.random() * 100) + 1);
+      if (++n >= 28) {
+        clearInterval(iv);
+        displayNumber(final);
+        container.classList.remove('rolling');
+        sparks(box);
+        running = false;
+      }
+    }, 55);
+  }
+
+  window.addEventListener('load', () => {
+    displayNumber('?');
+  });
+</script>
+
+</body>
+</html>
