@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TRAININGA TONE</title>
+<title>NOMBRE AU HASARD</title>
 <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@900&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -134,6 +134,33 @@
     0%   { opacity: 1; transform: translate(0,0) scale(1); }
     100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
   }
+
+  .gif-container {
+    position: absolute;
+    top: 200%;
+    left: 150%;
+    transform: translate(-50%, -50%);
+    display: none;
+    z-index: 999;
+  }
+
+  .gif-container img {
+    width: 400px;
+    height: auto;
+    user-select: none;
+    animation: gifShow 0.5s ease-out forwards;
+  }
+
+  @keyframes gifShow {
+    from {
+      opacity: 0;
+      transform: scale(0.5);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 </style>
 </head>
 <body>
@@ -151,6 +178,10 @@
       <img src="/chiffres/Inter.png" alt="?" id="numDisplay">
     </div>
   </div>
+
+<div class="gif-container" id="gifContainer">
+  <img src="./tone.gif" alt="GIF TONE">
+</div>
 
 <script>
   function sparks(el) {
@@ -190,7 +221,7 @@
   let running = false;
   
   // 🎯 VARIABLE À MODIFIER : Nombre d'itérations du tirage (plus grand = plus long)
-  const ROLL_ITERATIONS = 28;  // Changez cette valeur pour augmenter/diminuer le temps
+  const ROLL_ITERATIONS = 50;  // Changez cette valeur pour augmenter/diminuer le temps
   
   // 🎯 VARIABLE À MODIFIER : Temps entre chaque changement en millisecondes
   const ROLL_SPEED = 55;  // Changez cette valeur pour accélérer/ralentir les chiffres
@@ -217,6 +248,13 @@
         }, 50);
         
         sparks(box);
+        
+        // Afficher le GIF dès que le zoom final est fini
+        setTimeout(() => {
+          const gifContainer = document.getElementById('gifContainer');
+          gifContainer.style.display = 'block';
+        }, 850);
+        
         running = false;
       }
     }, ROLL_SPEED);
