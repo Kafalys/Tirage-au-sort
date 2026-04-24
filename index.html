@@ -127,7 +127,7 @@
     <div class="ca ca-bl"></div>
     <div class="ca ca-br"></div>
     <div class="num-container" id="numContainer">
-      <img src="./chiffres/Inter.png" alt="?" id="numDisplay">
+      <img src="./Chiffres/Inter.png" alt="?" id="numDisplay">
     </div>
   </div>
 
@@ -151,7 +151,7 @@
     
     if (num === '?') {
       const img = document.createElement('img');
-      img.src = './chiffres/Inter.png';
+      img.src = './Chiffres/Inter.png';
       img.alt = '?';
       container.appendChild(img);
     } else {
@@ -159,7 +159,7 @@
       for (let i = 0; i < numStr.length; i++) {
         const digit = numStr[i];
         const img = document.createElement('img');
-        img.src = `./chiffres/${digit}.png`;
+        img.src = `./Chiffres/${digit}.png`;
         img.alt = digit;
         container.appendChild(img);
       }
